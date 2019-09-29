@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.dao.EmployeeDao">
+	<resultMap type="Employee" id="BaseResultMap">
+	    <id property="id" column="id"/>
+	   <result property="cardId" column="card_id"/>
+	   <result property="postCode" column="post_code" />
+	   <result  property="qqNum" column="qq_num" />
+	   <result property="name" column="name" />
+	   <result property="sex" column="sex" />
+	   <result property="phone" column="phone" />
+	   <result property="email" column="email" />
+	   <result property="education" column="education" />
+	   <result property="address" column="address" />
+	   <result property="createtime" column="create_time" />
+	   <result property="tel" column="tel" />
+	   <result property="party" column="party" />
+	   <result property="birthday" column="birthday" />
+	   <result property="race" column="race" />
+	   <result property="speciality" column="speciality" />
+	   <result property="hobby" column="hobby" />
+	   <result property="remark" column="remark" />
+	   <association property="job" javaType="Job">
+	     <id property="id" column="id"/>
+	     <result property="name" column="jobname"/>
+	   </association>
+	   <association property="dept" javaType="Dept">
+	     <id property="id" column="id"/>
+	     <result property="name" column="deptname"/>
+	   </association>
+	   
+	</resultMap> 
+	<!-- 分页查询员工 -->
+	<select id="getEmployeeListByPage"  resultMap="BaseResultMap">
+	   select e.*,d.name deptname,j.name jobname
+       from employee_inf e left join dep_inf d on e.dept_id=d.id
+       left join job_inf j on e.job_id=j.id
+       <where>
+           <if test="employee.dept.id!=0">
+              and e.dept_id=#{employee.dept.id}
+           </if>
+           <if test="employee.job.id!=0">
+              and e.job_id=#{employee.job.id}
+           </if>
+           <if test="employee.sex!=0">
+              and e.sex=#{employee.sex}
+           </if>
+           <if test="employee.name!=null and employee.name!=''">
+              and e.name like '%${employee.name}%'
+           </if>
+           <if test="employee.cardId!=null and employee.cardId!=''">
+              and e.card_id like '%${employee.cardId}%'
+           </if>
+           <if test="employee.phone!=null and employee.phone!=''">
+              and e.phone like '%${employee.phone}%'
+           </if>
+       </where>
+       limit #{page.start},#{page.pageSize}
+       </select>
+     <!--  查询职位 -->
+     <select id="getJobList" resultType="Job">
+		select * from job_inf
+	</select>
+	<!--  查询部门 -->
+	<select id="getDeptList" resultType="Dept">
+		select * from dep_inf
+	</select>
+	<!-- 查询总数 -->
+	<select id="getEmployeeListCount" resultType="int" parameterType="Employee">
+	  select count(*) 
+       from employee_inf e left join dep_inf d on e.dept_id=d.id
+       left join job_inf j on e.job_id=j.id
+       <where>
+           <if test="dept.id!=0">
+              and e.dept_id=#{dept.id}
+           </if>
+           <if test="job.id!=0">
+              and e.job_id=#{job.id}
+           </if>
+           <if test="sex!=0">
+              and e.sex=#{sex}
+           </if>
+           <if test="name!=null and name!=''">
+              and e.name like '%${name}%'
+           </if>
+           <if test="cardId!=null and cardId!=''">
+              and e.card_id like '%${cardId}%'
+           </if>
+           <if test="phone!=null and phone!=''">
+              and e.phone like '%${phone}%'
+           </if>
+       </where>
+	</select>
+	
+	<!-- 添加员工-->
+	<insert id="addEmployee" parameterType="Employee">
+	   insert into employee_inf (dept_id,job_id,name,card_id,address,post_code,tel,phone,qq_num,email,sex,party,birthday,race,education,speciality,hobby,remark)
+	   values(#{dept.id},#{job.id},#{name},#{cardId},#{address},#{postCode},#{tel},#{phone},#{qqNum},#{email},#{sex},#{party},#{birthday},#{race},#{education},#{speciality},#{hobby},#{remark})
+	</insert>
+	
+	<!-- 删除员工 -->
+	<delete id="deleteEmployee" parameterType="java.lang.String">
+      delete from employee_inf where id in (${ids})
+    </delete>
+   <!--  通过id查询元员工 -->
+   <select id="getEmployeeById"  resultMap="BaseResultMap">
+		select * from employee_inf where id=#{id}
+	</select>
+    <!-- 修改员工信息 -->
+    <update id="updateEmployee" parameterType="User">
+	 update employee_inf set dept_id=#{dept.id},job_id=#{job.id},name=#{name},card_id=#{cardId},address=#{address},post_code=#{postCode},tel=#{tel},phone=#{phone},qq_num=#{qqNum},email=#{email},sex=#{sex},party=#{party},birthday=#{birthday},race=#{race},education=#{education},speciality=#{speciality},hobby=#{hobby},remark=#{remark}
+	   where id=#{id}
+	</update>
+</mapper>

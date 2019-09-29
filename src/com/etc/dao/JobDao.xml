@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.dao.JobDao">
+	
+	
+	<!-- 总数查询 -->
+	<select id="getJobListCount" parameterType="Job" resultType="int">
+	  select count(*) from job_inf
+	  <where>
+			<if test="name!=null and name!=''">
+				and name like '%${name}%'
+			</if>
+		</where>
+	</select>
+	<!-- 分页查询 -->
+	<select id="getJobListByPage" resultType="Job">
+		select * from job_inf
+		<where>
+			<if test="job.name!=null and job.name!=''">
+				and name like '%${job.name}%'
+			</if>
+		</where>
+		limit #{page.start},#{page.pageSize}
+	</select>
+	<!-- 添加职位-->
+	<insert id="addJob" parameterType="Job">
+	   insert into job_inf (name,remark)
+	   values(#{name},#{remark})
+	</insert>
+	<!-- 修改职位 -->
+	<update id="updateJob" parameterType="Job">
+	 update job_inf set name=#{name},remark=#{remark}
+	  where id=#{id}
+	</update>
+    <!-- 删除职位 -->
+    <delete id="deleteJob" parameterType="java.lang.String">
+      delete from job_inf where id in (${ids})
+    </delete>
+    
+    
+    
+</mapper>

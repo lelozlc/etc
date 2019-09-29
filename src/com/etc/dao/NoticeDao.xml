@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.dao.NoticeDao"> 
+  <resultMap type="Notice" id="BaseResultMap">
+	    <id property="id" column="id"/>
+	   <result property="title" column="title"/>
+	   <result property="content" column="content" />
+	   <result  property="create_date" column="create_date" />
+	   
+	   <association property="user" javaType="User">
+	     <id property="id" column="uid"/>
+	     <result property="username" column="username"/>
+	   </association>
+	</resultMap> 
+
+	<!-- 分页查询公告 -->
+	<select id="getNoticeListByPage"  resultMap="BaseResultMap">
+	   select a.*,b.id uid,b.username username  from notice_inf a, user_inf b
+       <where>
+           <if test="notice.title!=null and notice.title!=''">
+              and title like '%${notice.title}%'
+           </if>
+           <if test="notice.content!=null and notice.content!=''">
+              and content like '%${notice.content}%'
+           </if>
+       </where>
+       limit #{page.start},#{page.pageSize}
+       </select>
+	<!-- 查询总数 -->
+	<select id="getNoticeListCount" resultType="int" parameterType="Notice">
+	  select count(*)  from notice_inf 
+       <where>
+           <if test="title!=null and title!=''">
+              and title like '%${title}%'
+           </if>
+           <if test="content!=null and content!=''">
+              and content like '%${content}%'
+           </if>
+       </where>
+	</select>
+	
+	<!-- 添加公告-->
+	<insert id="addNotice" parameterType="Notice">
+	   insert into notice_inf (title,content,user_id)
+	   values(#{title},#{content},#{user_id})
+	</insert>
+	
+	<!-- 删除公告 -->
+	<delete id="deleteNotice" parameterType="java.lang.String">
+      delete from notice_inf where id in (${ids})
+    </delete>
+    <!-- 修改公告信息 -->
+    <update id="updateNotice" parameterType="Notice">
+	 update notice_inf set title=#{title},content=#{content},user_id=#{user_id}
+	   where id=#{id}
+	</update>
+</mapper>

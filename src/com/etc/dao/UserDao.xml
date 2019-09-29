@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.dao.UserDao">
+	<select id="getUser" parameterType="User" resultType="User">
+		select * from user_inf where loginname=#{loginname} and password=#{password}
+	</select>
+
+	<select id="getUserList" parameterType="User" resultType="User">
+		select * from user_inf
+		<where>
+			<if test="username!=null and username!=''">
+				and username like '%${username}%'
+			</if>
+			<if test="status!=null">
+				and status=#{status}
+			</if>
+		</where>
+	</select>
+	
+	<!-- 分页查询 -->
+	<select id="getUserListByPage" resultType="User">
+	  select * from user_inf
+	  <where>
+			<if test="user.username!=null and user.username!=''">
+				and username like '%${user.username}%'
+			</if>
+			<if test="user.status!=null">
+				and status=#{user.status}
+			</if>
+		</where>
+	   limit #{page.start},#{page.pageSize}
+	</select>
+	
+	<select id="getUserListCount" parameterType="User" resultType="int">
+		select count(*) from user_inf
+		<where>
+			<if test="username!=null and username!=''">
+				and username like '%${username}%'
+			</if>
+			<if test="status!=null">
+				and status=#{status}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="addUser" parameterType="User">
+	   insert into user_inf (loginname,username,password,status)
+	   values(#{loginname},#{username},#{password},#{status})
+	</insert>
+	
+	<update id="updateUser" parameterType="User">
+	 update user_inf set username=#{username},loginname=#{loginname},status=#{status}
+	  where id=#{id}
+	</update>
+    
+    <delete id="deleteUser" parameterType="java.lang.String">
+      delete from user_inf where id in (${ids})
+    </delete>
+    
+    
+    
+</mapper>

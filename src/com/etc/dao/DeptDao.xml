@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.dao.DeptDao">
+	<!-- 查询总数 -->
+	<select id="getDeptListCount" parameterType="Dept" resultType="int">
+		select count(*) from dep_inf
+		<where>
+			<if test="name!=null and name!=''">
+				and name like '%${name}%'
+			</if>
+		</where>
+	</select>
+	<!-- 分页查询 -->
+	<select id="getDeptListByPage" resultType="Dept">
+		select * from dep_inf
+		<where>
+			<if test="dept.name!=null and dept.name!=''">
+				and name like '%${dept.name}%'
+			</if>
+		</where>
+		limit #{page.start},#{page.pageSize}
+	</select>
+	<!-- 添加部门 -->
+	<insert id="addDept" parameterType="Dept">
+		insert into dep_inf (name,remark)
+		values(#{name},#{remark})
+	</insert>
+	<!-- 修改部门 -->
+	<update id="updateDept" parameterType="Dept">
+		update dep_inf set name=#{name},remark=#{remark}
+		where id=#{id}
+	</update>
+	<!-- 删除部门 -->
+	<delete id="deletDept" parameterType="java.lang.String">
+		delete from dep_inf where id in (${ids})
+	</delete>
+</mapper>

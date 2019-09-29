@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.etc.dao.DocumentDao"> 
+    <resultMap type="Document" id="BaseResultMap">
+	    <id property="id" column="id"/>
+	   <result property="title" column="title"/>
+	   <result property="filename" column="filename" />
+	   <result  property="create_date" column="create_date" />
+	   <result  property="remark" column="remark" />
+	   
+	   <association property="user" javaType="User">
+	     <id property="id" column="uid"/>
+	     <result property="username" column="username"/>
+	   </association>
+	</resultMap>
+
+	<!-- 分页查询文献 -->
+	 <select id="getDocumentListByPage"  resultMap="BaseResultMap">
+	   select a.*,b.id uid,b.username username  from document_inf a, user_inf b
+       <where>
+           <if test="document.title!=null and document.title!=''">
+              and title like '%${document.title}%'
+           </if>
+       </where>
+       limit #{page.start},#{page.pageSize}
+       </select>
+	<!-- 查询总数 -->
+	<select id="getDocumentTotal" resultType="int" parameterType="Document">
+	  select count(*)  from document_inf 
+       <where>
+           <if test="title!=null and title!=''">
+              and title like '%${title}%'
+           </if>
+       </where>
+	</select> 
+	
+	<!-- 添加文献-->
+	<insert id="addDocument" parameterType="Document">
+	   insert into document_inf (title,filename,user_id,remark)
+	   values(#{title},#{filename},#{user_id},#{remark})
+	</insert>
+	
+	<!-- 删除文献 -->
+	<delete id="deleteDocument" parameterType="java.lang.String">
+      delete from document_inf where id in (${ids})
+    </delete>
+    <!-- 修改文献信息 -->
+    <update id="updateDocument" parameterType="Document">
+	 update document_inf set title=#{title},filename=#{filename},remark=#{remark}
+	   where id=#{id}
+	</update>
+</mapper>
